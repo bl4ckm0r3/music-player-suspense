@@ -1,10 +1,23 @@
 import React, { Component } from "react";
-import Search from "./Search";
 import { SearchContextProvider } from "./contexts/SearchContext";
-import SongList from "./SongList";
+
 import { SongContextProvider } from "./contexts/SongContext";
-import Player from "./Player";
-import Loader from "./Loader";
+
+import { asyncComponent } from "./util";
+
+const SongList = asyncComponent(() =>
+  import("./SongList").then(mod => mod.default)
+);
+const Player = asyncComponent(() =>
+  import("./Player").then(mod => mod.default)
+);
+const Loader = asyncComponent(() =>
+  import("./Loader").then(mod => mod.default)
+);
+const Search = asyncComponent(() =>
+  import("./Search").then(mod => mod.default)
+);
+
 const fetchData = async (query = "") => {
   const stream = await fetch(
     `https://cors.io/?https://itunes.apple.com/search?term=${encodeURI(query)}`
@@ -40,7 +53,11 @@ export default class Home extends Component {
   };
   render() {
     let SongListOrPlayer = !this.state.song ? (
-      this.state.isLoading ? <Loader /> : <SongList onSelectSong={this.selectSong} />
+      this.state.isLoading ? (
+        <Loader />
+      ) : (
+        <SongList onSelectSong={this.selectSong} />
+      )
     ) : (
       <Player onBack={this.exitPlayer} />
     );

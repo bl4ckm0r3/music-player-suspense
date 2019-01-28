@@ -1,6 +1,7 @@
 import React from "react";
-import { getHighResImage } from "./util";
-import Image from "./Image";
+import { getHighResImage, asyncComponent } from "./util";
+
+const Image = asyncComponent(() => import("./Image").then(mod => mod.default));
 
 export default function Song(props) {
   return (

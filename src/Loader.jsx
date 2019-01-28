@@ -1,5 +1,7 @@
 import React from 'react'
-import { BarLoader } from 'react-spinners';
+import { asyncComponent } from './util';
+
+const BarLoader = asyncComponent(() => import("react-spinners").then(mod => mod.BarLoader));
 
 export default function Loader(props) {
   return (

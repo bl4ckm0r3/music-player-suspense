@@ -1,5 +1,7 @@
 import React, { PureComponent } from "react";
-import Loader from "./Loader";
+import { asyncComponent } from "./util";
+
+const Loader = asyncComponent(() => import("./Loader").then(mod => mod.default));
 
 export default class Image extends PureComponent {
   state = {
