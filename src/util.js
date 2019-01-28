@@ -5,21 +5,25 @@ export const getHighResImage = (uri, size = 600) =>
 
 export function asyncComponent(fetchComponent) {
   return class LazyComponent extends React.Component {
-    static Component = null;
-    state = { Component: LazyComponent.Component };
+    state = { Component: null };
 
     async componentDidMount() {
       if (!this.state.Component) {
         const Component = await fetchComponent();
-        LazyComponent.Component = Component;
-        this.setState({ Component });
+        this.updateComponent(Component);
       }
     }
+    updateComponent = Component => {
+      this.setState({ Component });
+    };
 
+    componentWillUnmount() {
+      this.updateComponent = () => {};
+    }
     render() {
       const { Component } = this.state;
       if (Component) {
-        return <Component {...this.props} />
+        return <Component {...this.props} />;
       }
       return null;
     }
