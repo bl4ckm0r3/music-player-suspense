@@ -1,22 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, Suspense } from "react";
 import { SearchContextProvider } from "./contexts/SearchContext";
 
 import { SongContextProvider } from "./contexts/SongContext";
 
-import { asyncComponent } from "./util";
+const SongList = React.lazy(() => import("./SongList"));
 
-const SongList = asyncComponent(() =>
-  import("./SongList").then(mod => mod.default)
-);
-const Player = asyncComponent(() =>
-  import("./Player").then(mod => mod.default)
-);
-const Loader = asyncComponent(() =>
-  import("./Loader").then(mod => mod.default)
-);
-const Search = asyncComponent(() =>
-  import("./Search").then(mod => mod.default)
-);
+const Player = React.lazy(() => import("./Player"));
+const Search = React.lazy(() => import("./Search"));
 
 const fetchData = async (query = "") => {
   const stream = await fetch(
@@ -53,11 +43,7 @@ export default class Home extends Component {
   };
   render() {
     let SongListOrPlayer = !this.state.song ? (
-      this.state.isLoading ? (
-        <Loader />
-      ) : (
-        <SongList onSelectSong={this.selectSong} />
-      )
+      <SongList onSelectSong={this.selectSong} />
     ) : (
       <Player onBack={this.exitPlayer} />
     );
@@ -71,12 +57,14 @@ export default class Home extends Component {
         >
           Back
         </button>
-        <Search onSubmit={this.updateQuery} />
-        <SearchContextProvider value={this.state.songs}>
-          <SongContextProvider value={this.state.song}>
-            {SongListOrPlayer}
-          </SongContextProvider>
-        </SearchContextProvider>
+        <Suspense fallback={<h1>whaaat</h1>}>
+          <Search onSubmit={this.updateQuery} />
+          <SearchContextProvider value={this.state.songs}>
+            <SongContextProvider value={this.state.song}>
+              {SongListOrPlayer}
+            </SongContextProvider>
+          </SearchContextProvider>
+        </Suspense>
       </div>
     );
   }

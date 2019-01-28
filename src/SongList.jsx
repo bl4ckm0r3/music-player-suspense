@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { SearchContextConsumer } from "./contexts/SearchContext";
-import { asyncComponent } from "./util";
 
-const Song = asyncComponent(() => import("./Song").then(mod => mod.default));
+const Song = React.lazy(() => import("./Song"));
 
 export default class SongList extends Component {
   render() {
