@@ -19,9 +19,10 @@ export default class Player extends Component {
   };
   componentWillUnmount() {
     this.image.onload = () => {};
+    this.image = null;
   }
   render() {
-      const classes = `player fullscreen-bg ${!!this.state.bg && "loaded"}`;
+    const classes = `player fullscreen-bg ${!!this.state.bg && "loaded"}`;
     return (
       <SongContextConsumer>
         {song => (

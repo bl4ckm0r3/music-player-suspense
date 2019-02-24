@@ -1,38 +1,18 @@
-import React, { PureComponent } from "react";
-import { asyncComponent } from "./util";
+import React from "react";
+import { unstable_createResource as createResource } from "react-cache";
 
-const Loader = asyncComponent(() => import("./Loader").then(mod => mod.default));
+const ImageResource = createResource(
+  src =>
+    new Promise(resolve => {
+      const loader = new window.Image();
+      loader.onload = resolve;
+      loader.src = src;
+    })
+);
 
-export default class Image extends PureComponent {
-  state = {
-    src: null
-  };
-
-  componentDidMount() {
-    this.loadImage();
+export const Image = ({ src, alt = "cover", ...rest }) => {
+  if (src) {
+    ImageResource.read(src);
   }
-
-  componentDidUpdate() {
-    this.loadImage();
-  }
-
-  loadImage = () => {
-    if (this.props.src) {
-      this.loader = new window.Image();
-      this.loader.onload = () => this.setState({ src: this.props.src });
-      this.loader.src = this.props.src;
-    }
-  };
-  componentWillUnmount() {
-    this.loader.onload = () => {};
-  }
-  render() {
-    return this.state.src ? (
-      <img className={this.props.className} alt="cover" src={this.state.src} />
-    ) : (
-      <div className="loader">
-        <Loader css={this.props.className} sizeUnit={"px"} size={140} />
-      </div>
-    );
-  }
-}
+  return <img src={src} alt={alt} {...rest} />;
+};
